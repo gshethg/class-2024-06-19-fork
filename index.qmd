@@ -25,7 +25,8 @@ la_bachelor_degrees <- get_acs(
     county = "Los Angeles",
     survey = "acs5",
     year = 2021,
-    geometry = TRUE
+    geometry = TRUE,
+    progress = FALSE
 )
 ```
 
