@@ -1,0 +1,72 @@
+---
+title: "Bachelor Degrees in LA"
+execute: 
+  echo: false
+  warning: false
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(tidyverse)
+library(tidycensus)
+library(leaflet)
+```
+
+
+```{r}
+#| label: data-download
+#| message: false 
+
+la_bachelor_degrees <- get_acs(
+    geography = "tract",
+    variables = "DP02_0068P",
+    state = "CA",
+    county = "Los Angeles",
+    survey = "acs5",
+    year = 2021,
+    geometry = TRUE
+)
+```
+
+```{r}
+
+pal <- colorNumeric(
+    palette = "viridis",
+    domain = la_bachelor_degrees$estimate
+)
+
+# Create the leaflet map
+leaflet(la_bachelor_degrees) %>%
+    addTiles() %>%
+    addPolygons(
+        fillColor = ~pal(estimate),
+        weight = 1,
+        opacity = 1,
+        color = "white",
+        dashArray = "3",
+        fillOpacity = 0.7,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "#666",
+            dashArray = "",
+            fillOpacity = 0.7,
+            bringToFront = TRUE
+        ),
+        label = ~paste0(NAME, ": ", estimate, "%"),
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+        )
+    ) %>%
+    addLegend(
+        pal = pal,
+        values = ~estimate,
+        opacity = 0.7,
+        title = "Percentage with Bachelor's Degree",
+        position = "bottomright"
+    )
+```
+
+
